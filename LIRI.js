@@ -29,7 +29,7 @@ function spotifySearch(){
         else{
           // console.log("Your file was written");
           spotifyObject = response.tracks.items[0];
-          console.log("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+          var spotifyString = "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
           + "\n================================"
           + "\n"
           + "\nArtist: " + spotifyObject.artists[0].name
@@ -38,7 +38,13 @@ function spotifySearch(){
           + "\nLink: " + spotifyObject.external_urls.spotify
           + "\n"
           + "\n================================"
-          + "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+          + "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+          fs.appendFile("log.txt", spotifyString, function(err){
+            if(err){
+              console.log(err);
+            }
+          })
+          console.log(spotifyString);
         }
       });
 }
@@ -54,18 +60,25 @@ function omdbSearch(){
       else{
         omdbObject = JSON.parse(body);
 
-        console.log("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
-          + "\n================================"
-          + "\nTitle: " + omdbObject.Title
-          + "\nYear: " + omdbObject.Year
-          + "\nIMDB Rating: " + omdbObject.Ratings[1].value
-          + "\nCountry: " + omdbObject.Country
-          + "\nLanguage: " + omdbObject.Language
-          + "\nPlot: " + omdbObject.Plot
-          + "\nStarring: " + omdbObject.Actors
-          + "\n"
-          + "\n================================"
-          + "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        var omdbString = "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+        + "\n================================"
+        + "\nTitle: " + omdbObject.Title
+        + "\nYear: " + omdbObject.Year
+        + "\nIMDB Rating: " + omdbObject.Ratings[1].value
+        + "\nCountry: " + omdbObject.Country
+        + "\nLanguage: " + omdbObject.Language
+        + "\nPlot: " + omdbObject.Plot
+        + "\nStarring: " + omdbObject.Actors
+        + "\n"
+        + "\n================================"
+        + "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
+        fs.appendFile("log.txt", omdbString, function(err){
+          if(err){
+            console.log(err);
+          }
+        
+        })
+        console.log(omdbString);
       }
     });
 }
@@ -83,7 +96,7 @@ function bandsintownSearch(){
       // console.log(bandsObject);
 
       for(i=0; i < bandsObject.length; i++){
-      console.log("\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+      var bandsString = "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
       + "\n================================"
       + "\n" + searchQuery + " Concert"
       + "\nVenue: " + bandsObject[i].venue.name
@@ -91,7 +104,13 @@ function bandsintownSearch(){
       + "\nDate: " + moment(bandsObject[i].datetime).format("MM/DD/YYYY, h:mm a")
       + "\n"
       + "\n================================"
-      + "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+      + "\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+      fs.appendFile("log.txt", bandsString, function(err){
+        if(err){
+          console.log(err);
+        }
+      })
+      console.log(bandsString);
     }
   }
   });
@@ -124,6 +143,33 @@ if(LIRI === "concert-this"){
   else{
     bandsintownSearch();
   }
+}
+if(LIRI === "do-what-it-says"){
+  fs.readFile("random.txt", "utf8", function(err, data){
+    if(err){
+      return console.log("Error: " + err);
+    }
+    else{
+      var dataArr = data.split(",");
+      var dataArr2 = dataArr[1].split(/\b/);
+      var wordJoin = "";
+      for(i=1;i<dataArr2.length-1; i++){
+        wordJoin = wordJoin + dataArr2[i];
+      }
+      console.log(wordJoin);
+      searchQuery = wordJoin;
+
+    if(dataArr[0] === "spotify-this-song"){  
+      spotifySearch();
+    }
+    else if (dataArr[0] === "concert-this"){
+      bandsintownSearch();
+    }
+    else{
+      omdbSearch();
+    }
+    }
+  });
 }
 
 
